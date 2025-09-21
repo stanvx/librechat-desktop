@@ -20,11 +20,11 @@ Cross-platform native desktop wrapper for LibreChat web UI using Tauri v2, prior
 - **Configuration**: `src-tauri/tauri.conf.json`, `package.json`
 
 ## Phase 3.1: Setup
-- [ ] T001 Create Tauri project structure with React frontend
-- [ ] T002 Initialize Rust dependencies (tokio, serde, reqwest, sqlx, tauri-plugins)
-- [ ] T003 [P] Configure frontend dependencies (React, TypeScript, Tailwind, Zustand, React Query)
-- [ ] T004 [P] Configure development environment (Vite, ESLint, Prettier, Rust clippy)
-- [ ] T005 [P] Set up Tauri configuration in src-tauri/tauri.conf.json
+- [X] T001 Create Tauri project structure with React frontend
+- [X] T002 Initialize Rust dependencies (tokio, serde, reqwest, sqlx, tauri-plugins)
+- [X] T003 [P] Configure frontend dependencies (React, TypeScript, Tailwind, Zustand, React Query)
+- [X] T004 [P] Configure development environment (Vite, ESLint, Prettier, Rust clippy)
+- [X] T005 [P] Set up Tauri configuration in src-tauri/tauri.conf.json
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
