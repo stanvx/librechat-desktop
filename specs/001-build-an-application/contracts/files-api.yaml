@@ -1,0 +1,426 @@
+openapi: 3.0.3
+info:
+  title: LibreChat Files API
+  description: File management endpoints for LibreChat Desktop Application
+  version: 1.0.0
+  
+servers:
+  - url: '{serverUrl}/api'
+    variables:
+      serverUrl:
+        default: 'https://localhost:3080'
+        description: LibreChat server base URL
+
+paths:
+  /files:
+    get:
+      summary: List user files
+      description: Retrieve user's uploaded files
+      operationId: listFiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [local, s3, openai, azure]
+      responses:
+        '200':
+          description: Files retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileListResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Upload file
+      description: Upload a file for use in conversations
+      operationId: uploadFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadRequest'
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          description: Invalid file or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files/{fileId}:
+    get:
+      summary: Get file details
+      description: Retrieve specific file information
+      operationId: getFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDetail'
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete file
+      description: Delete a user's uploaded file
+      operationId: deleteFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files/{fileId}/download:
+    get:
+      summary: Download file
+      description: Download file content
+      operationId: downloadFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files/batch/delete:
+    delete:
+      summary: Delete multiple files
+      description: Delete multiple files in a single request
+      operationId: batchDeleteFiles
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchDeleteRequest'
+      responses:
+        '200':
+          description: Files deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDeleteResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    FileDetail:
+      type: object
+      required:
+        - file_id
+        - filename
+        - bytes
+        - createdAt
+        - type
+      properties:
+        file_id:
+          type: string
+          example: "file_123456789"
+        filename:
+          type: string
+          example: "document.pdf"
+        originalname:
+          type: string
+          example: "My Document.pdf"
+        bytes:
+          type: integer
+          example: 1024000
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        type:
+          type: string
+          example: "application/pdf"
+        usage:
+          type: string
+          enum: [assistants, chat, agents]
+          example: "chat"
+        source:
+          type: string
+          enum: [local, s3, openai, azure]
+          example: "local"
+        filepath:
+          type: string
+          example: "/uploads/user123/document.pdf"
+        width:
+          type: integer
+          example: 1920
+        height:
+          type: integer
+          example: 1080
+        context:
+          type: string
+          enum: [avatar, assistants, chat, agents]
+          example: "chat"
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            pages: 10
+            language: "en"
+
+    FileUploadRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The file to upload
+        usage:
+          type: string
+          enum: [assistants, chat, agents]
+          example: "chat"
+        context:
+          type: string
+          enum: [avatar, assistants, chat, agents]
+          example: "chat"
+        assistantId:
+          type: string
+          example: "asst_123456"
+        agentId:
+          type: string
+          example: "agent_123456"
+        conversationId:
+          type: string
+          example: "conv_123456789"
+        messageId:
+          type: string
+          example: "msg_123456789"
+
+    FileUploadResponse:
+      type: object
+      required:
+        - files
+        - message
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileDetail'
+        message:
+          type: string
+          example: "File uploaded successfully"
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+
+    FileListResponse:
+      type: object
+      required:
+        - files
+        - total
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileDetail'
+        total:
+          type: integer
+          example: 150
+        pageSize:
+          type: integer
+          example: 25
+        cursor:
+          type: string
+          example: "cursor_token"
+        hasMore:
+          type: boolean
+          example: true
+
+    BatchDeleteRequest:
+      type: object
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+          example: ["file_123456789", "file_987654321"]
+
+    BatchDeleteResponse:
+      type: object
+      required:
+        - deleted
+        - errors
+      properties:
+        deleted:
+          type: array
+          items:
+            type: string
+          example: ["file_123456789"]
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              file_id:
+                type: string
+              error:
+                type: string
+          example: []
+        message:
+          type: string
+          example: "1 file(s) deleted successfully"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "FILE_NOT_FOUND"
+        message:
+          type: string
+          example: "The requested file could not be found"
+        details:
+          type: object
+          additionalProperties: true
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"

@@ -1,0 +1,360 @@
+openapi: 3.0.3
+info:
+  title: LibreChat Conversations API
+  description: Conversation management endpoints for LibreChat Desktop Application
+  version: 1.0.0
+  
+servers:
+  - url: '{serverUrl}/api'
+    variables:
+      serverUrl:
+        default: 'https://localhost:3080'
+        description: LibreChat server base URL
+
+paths:
+  /convos:
+    get:
+      summary: List conversations
+      description: Retrieve user's conversations with pagination
+      operationId: listConversations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+      responses:
+        '200':
+          description: Conversations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationListResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create new conversation
+      description: Start a new conversation
+      operationId: createConversation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+      responses:
+        '201':
+          description: Conversation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /convos/{conversationId}:
+    get:
+      summary: Get conversation details
+      description: Retrieve specific conversation with messages
+      operationId: getConversation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetail'
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update conversation
+      description: Update conversation title or metadata
+      operationId: updateConversation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConversationRequest'
+      responses:
+        '200':
+          description: Conversation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete conversation
+      description: Delete a conversation and all its messages
+      operationId: deleteConversation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Conversation:
+      type: object
+      required:
+        - conversationId
+        - title
+        - createdAt
+        - updatedAt
+      properties:
+        conversationId:
+          type: string
+          example: "conv_123456789"
+        title:
+          type: string
+          maxLength: 200
+          example: "My AI Conversation"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:35:00Z"
+        messageCount:
+          type: integer
+          minimum: 0
+          example: 5
+        lastMessage:
+          type: string
+          maxLength: 100
+          example: "Thank you for the help!"
+        model:
+          type: string
+          example: "gpt-4"
+        endpoint:
+          type: string
+          example: "openAI"
+
+    ConversationDetail:
+      allOf:
+        - $ref: '#/components/schemas/Conversation'
+        - type: object
+          properties:
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Message'
+
+    Message:
+      type: object
+      required:
+        - messageId
+        - text
+        - sender
+        - createdAt
+      properties:
+        messageId:
+          type: string
+          example: "msg_123456789"
+        text:
+          type: string
+          maxLength: 32768
+          example: "Hello, how can I help you today?"
+        sender:
+          type: string
+          enum: [User, ChatGPT, Assistant]
+          example: "Assistant"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        isCreatedByUser:
+          type: boolean
+          example: false
+        error:
+          type: boolean
+          example: false
+        parentMessageId:
+          type: string
+          example: "msg_123456788"
+        model:
+          type: string
+          example: "gpt-4"
+        tokenCount:
+          type: integer
+          minimum: 0
+          example: 150
+
+    CreateConversationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+          example: "New Conversation"
+        model:
+          type: string
+          example: "gpt-4"
+        endpoint:
+          type: string
+          example: "openAI"
+
+    UpdateConversationRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+          example: "Updated Conversation Title"
+
+    ConversationListResponse:
+      type: object
+      required:
+        - conversations
+        - total
+        - limit
+        - offset
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
+        total:
+          type: integer
+          example: 150
+        limit:
+          type: integer
+          example: 20
+        offset:
+          type: integer
+          example: 0
+        hasMore:
+          type: boolean
+          example: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "CONVERSATION_NOT_FOUND"
+        message:
+          type: string
+          example: "The requested conversation could not be found"
+        details:
+          type: object
+          additionalProperties: true
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"

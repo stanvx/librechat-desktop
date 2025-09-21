@@ -1,0 +1,44 @@
+# Claude Code
+.claude/
+
+# Specify framework  
+.specify/
+
+# Temporary directories
+tmp/
+
+# Dependencies
+node_modules/
+target/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Tauri specific
+src-tauri/target/
+src-tauri/Cargo.lock
+
+# Bundle outputs
+src-tauri/target/release/bundle/

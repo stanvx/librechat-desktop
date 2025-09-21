@@ -1,0 +1,370 @@
+openapi: 3.0.3
+info:
+  title: LibreChat Messages API
+  description: Message operations for LibreChat Desktop Application
+  version: 1.0.0
+  
+servers:
+  - url: '{serverUrl}/api'
+    variables:
+      serverUrl:
+        default: 'https://localhost:3080'
+        description: LibreChat server base URL
+
+paths:
+  /messages:
+    post:
+      summary: Send message
+      description: Send a new message in a conversation
+      operationId: sendMessage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: Message sent successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Server-sent events stream
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /messages/{messageId}:
+    get:
+      summary: Get message
+      description: Retrieve a specific message
+      operationId: getMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Message not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update message
+      description: Edit an existing message
+      operationId: updateMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMessageRequest'
+      responses:
+        '200':
+          description: Message updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '404':
+          description: Message not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete message
+      description: Delete a message from conversation
+      operationId: deleteMessage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Message not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /messages/abort:
+    post:
+      summary: Abort message generation
+      description: Stop the current message generation process
+      operationId: abortMessage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbortMessageRequest'
+      responses:
+        '200':
+          description: Message generation aborted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Message:
+      type: object
+      required:
+        - messageId
+        - text
+        - sender
+        - createdAt
+      properties:
+        messageId:
+          type: string
+          example: "msg_123456789"
+        conversationId:
+          type: string
+          example: "conv_123456789"
+        parentMessageId:
+          type: string
+          example: "msg_123456788"
+        text:
+          type: string
+          maxLength: 32768
+          example: "Hello, how can I help you today?"
+        sender:
+          type: string
+          enum: [User, ChatGPT, Assistant]
+          example: "Assistant"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-21T10:30:00Z"
+        isCreatedByUser:
+          type: boolean
+          example: false
+        error:
+          type: boolean
+          example: false
+        model:
+          type: string
+          example: "gpt-4"
+        endpoint:
+          type: string
+          example: "openAI"
+        tokenCount:
+          type: integer
+          minimum: 0
+          example: 150
+        finish_reason:
+          type: string
+          enum: [stop, length, content_filter, null]
+          example: "stop"
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageFile'
+
+    MessageFile:
+      type: object
+      required:
+        - file_id
+        - filename
+      properties:
+        file_id:
+          type: string
+          example: "file_123456"
+        filename:
+          type: string
+          example: "document.pdf"
+        type:
+          type: string
+          example: "application/pdf"
+        size:
+          type: integer
+          example: 1024000
+
+    SendMessageRequest:
+      type: object
+      required:
+        - text
+        - conversationId
+      properties:
+        text:
+          type: string
+          maxLength: 32768
+          example: "What is the weather like today?"
+        conversationId:
+          type: string
+          example: "conv_123456789"
+        parentMessageId:
+          type: string
+          example: "msg_123456788"
+        model:
+          type: string
+          example: "gpt-4"
+        endpoint:
+          type: string
+          example: "openAI"
+        files:
+          type: array
+          items:
+            type: string
+          example: ["file_123456", "file_123457"]
+        presetId:
+          type: string
+          example: "preset_123"
+
+    UpdateMessageRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          maxLength: 32768
+          example: "Updated message content"
+
+    AbortMessageRequest:
+      type: object
+      required:
+        - conversationId
+      properties:
+        conversationId:
+          type: string
+          example: "conv_123456789"
+        messageId:
+          type: string
+          example: "msg_123456789"
+
+    MessageResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          $ref: '#/components/schemas/Message'
+        conversation:
+          type: object
+          properties:
+            conversationId:
+              type: string
+              example: "conv_123456789"
+            title:
+              type: string
+              example: "Weather Conversation"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "MESSAGE_NOT_FOUND"
+        message:
+          type: string
+          example: "The requested message could not be found"
+        details:
+          type: object
+          additionalProperties: true
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"
