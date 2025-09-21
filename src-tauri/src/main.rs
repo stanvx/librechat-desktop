@@ -2,8 +2,7 @@
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use tauri::Manager;
-use tauri_plugin_global_shortcut::ShortcutManagerExt;
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
 
 #[tauri::command]
 async fn get_greeting() -> Result<String, String> {
@@ -21,7 +20,8 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
-            register_global_shortcuts(app)?;
+            let handle = app.handle();
+            register_global_shortcuts(&handle);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![get_greeting])
@@ -29,10 +29,9 @@ fn main() {
         .expect("error while running LibreChat Desktop");
 }
 
-fn register_global_shortcuts(app: &tauri::AppHandle) -> tauri::Result<()> {
+fn register_global_shortcuts(app: &tauri::AppHandle) {
     let manager = app.global_shortcut();
-    manager.register("CmdOrCtrl+Shift+L", || {
-        println!("Global shortcut triggered: CmdOrCtrl+Shift+L");
-    })?;
-    Ok(())
+    if let Err(err) = manager.register("CmdOrCtrl+Shift+L") {
+        eprintln!("Global shortcut registration pending: {err}");
+    }
 }
