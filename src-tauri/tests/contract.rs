@@ -1,0 +1,1 @@
+include!("contract/mod.rs");

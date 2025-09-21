@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.tauri.app/config_v2.json",
+  "productName": "LibreChat Desktop",
+  "version": "0.1.0",
+  "identifier": "com.librechat.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:"
+    },
+    "windows": [
+      {
+        "title": "LibreChat Desktop",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "visible": true,
+        "decorations": true,
+        "transparent": false,
+        "minWidth": 960,
+        "minHeight": 640
+      }
+    ]
+  },
+  "plugins": {
+    "store": {
+      "defaultPath": "storage"
+    },
+    "globalShortcut": {}
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "dmg",
+      "msi",
+      "deb"
+    ],
+    "copyright": "Copyright \u00a9 2025 LibreChat",
+    "shortDescription": "Desktop wrapper for the LibreChat AI experience"
+  }
+}

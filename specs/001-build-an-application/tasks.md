@@ -20,58 +20,58 @@ Cross-platform native desktop wrapper for LibreChat web UI using Tauri v2, prior
 - **Configuration**: `src-tauri/tauri.conf.json`, `package.json`
 
 ## Phase 3.1: Setup
-- [ ] T001 Create Tauri project structure with React frontend
-- [ ] T002 Initialize Rust dependencies (tokio, serde, reqwest, sqlx, tauri-plugins)
-- [ ] T003 [P] Configure frontend dependencies (React, TypeScript, Tailwind, Zustand, React Query)
-- [ ] T004 [P] Configure development environment (Vite, ESLint, Prettier, Rust clippy)
-- [ ] T005 [P] Set up Tauri configuration in src-tauri/tauri.conf.json
+- [X] T001 Create Tauri project structure with React frontend
+- [X] T002 Initialize Rust dependencies (tokio, serde, reqwest, sqlx, tauri-plugins)
+- [X] T003 [P] Configure frontend dependencies (React, TypeScript, Tailwind, Zustand, React Query)
+- [X] T004 [P] Configure development environment (Vite, ESLint, Prettier, Rust clippy)
+- [X] T005 [P] Set up Tauri configuration in src-tauri/tauri.conf.json
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
 ### Contract Tests
-- [ ] T006 [P] Contract test auth API endpoints in tests/contract/test_auth_api.rs
-- [ ] T007 [P] Contract test conversations API endpoints in tests/contract/test_conversations_api.rs  
-- [ ] T008 [P] Contract test messages API endpoints in tests/contract/test_messages_api.rs
-- [ ] T009 [P] Contract test files API endpoints in tests/contract/test_files_api.rs
+- [X] T006 [P] Contract test auth API endpoints in src-tauri/tests/contract/test_auth_api.rs
+- [X] T007 [P] Contract test conversations API endpoints in src-tauri/tests/contract/test_conversations_api.rs  
+- [X] T008 [P] Contract test messages API endpoints in src-tauri/tests/contract/test_messages_api.rs
+- [X] T009 [P] Contract test files API endpoints in src-tauri/tests/contract/test_files_api.rs
 
 ### Integration Tests
-- [ ] T010 [P] Integration test LibreChat connection in tests/integration/test_connection.rs
-- [ ] T011 [P] Integration test authentication flow in tests/integration/test_auth_flow.rs
-- [ ] T012 [P] Integration test file upload/drag & drop in tests/integration/test_file_handling.rs
-- [ ] T013 [P] Integration test system tray functionality in tests/integration/test_system_tray.rs
-- [ ] T014 [P] Integration test global hotkeys in tests/integration/test_global_hotkeys.rs
-- [ ] T015 [P] Integration test quick capture overlay in tests/integration/test_quick_capture.rs
-- [ ] T016 [P] Integration test offline caching in tests/integration/test_offline_cache.rs
-- [ ] T017 [P] Integration test multi-window support in tests/integration/test_multi_window.rs
+- [X] T010 [P] Integration test LibreChat connection in src-tauri/tests/integration/test_connection.rs
+- [X] T011 [P] Integration test authentication flow in src-tauri/tests/integration/test_auth_flow.rs
+- [X] T012 [P] Integration test file upload/drag & drop in src-tauri/tests/integration/test_file_handling.rs
+- [X] T013 [P] Integration test system tray functionality in src-tauri/tests/integration/test_system_tray.rs
+- [X] T014 [P] Integration test global hotkeys in src-tauri/tests/integration/test_global_hotkeys.rs
+- [X] T015 [P] Integration test quick capture overlay in src-tauri/tests/integration/test_quick_capture.rs
+- [X] T016 [P] Integration test offline caching in src-tauri/tests/integration/test_offline_cache.rs
+- [X] T017 [P] Integration test multi-window support in src-tauri/tests/integration/test_multi_window.rs
 
 ## Phase 3.3: Core Models (ONLY after tests are failing)
-- [ ] T018 [P] Conversation model in src-tauri/src/models/conversation.rs
-- [ ] T019 [P] Message model in src-tauri/src/models/message.rs
-- [ ] T020 [P] EncryptedCache model in src-tauri/src/models/encrypted_cache.rs
-- [ ] T021 [P] MessageQueue model in src-tauri/src/models/message_queue.rs
-- [ ] T022 [P] UserPreferences model in src-tauri/src/models/user_preferences.rs
-- [ ] T023 [P] ServerConfiguration model in src-tauri/src/models/server_configuration.rs
-- [ ] T024 [P] DroppedFile model in src-tauri/src/models/dropped_file.rs
-- [ ] T025 [P] QuickCapture model in src-tauri/src/models/quick_capture.rs
+- [X] T018 [P] Conversation model in src-tauri/src/models/conversation.rs
+- [X] T019 [P] Message model in src-tauri/src/models/message.rs
+- [X] T020 [P] EncryptedCache model in src-tauri/src/models/encrypted_cache.rs
+- [X] T021 [P] MessageQueue model in src-tauri/src/models/message_queue.rs
+- [X] T022 [P] UserPreferences model in src-tauri/src/models/user_preferences.rs
+- [X] T023 [P] ServerConfiguration model in src-tauri/src/models/server_configuration.rs
+- [X] T024 [P] DroppedFile model in src-tauri/src/models/dropped_file.rs
+- [X] T025 [P] QuickCapture model in src-tauri/src/models/quick_capture.rs
 
 ## Phase 3.4: Database Setup
-- [ ] T026 SQLite database initialization in src-tauri/src/database/mod.rs
-- [ ] T027 Database migrations for all models in src-tauri/src/database/migrations.rs
-- [ ] T028 [P] Encryption setup with OS keychain integration in src-tauri/src/database/encryption.rs
+- [X] T026 SQLite database initialization in src-tauri/src/database/mod.rs
+- [X] T027 Database migrations for all models in src-tauri/src/database/migrations.rs
+- [X] T028 [P] Encryption setup with OS keychain integration in src-tauri/src/database/encryption.rs
 
 ## Phase 3.5: API Client Services
-- [ ] T029 [P] LibreChat API client base in src-tauri/src/services/api_client.rs
-- [ ] T030 [P] Authentication service in src-tauri/src/services/auth_service.rs
-- [ ] T031 [P] Conversations service in src-tauri/src/services/conversations_service.rs
-- [ ] T032 [P] Messages service in src-tauri/src/services/messages_service.rs
-- [ ] T033 [P] Files service in src-tauri/src/services/files_service.rs
+- [X] T029 [P] LibreChat API client base in src-tauri/src/services/api_client.rs
+- [X] T030 [P] Authentication service in src-tauri/src/services/auth_service.rs
+- [X] T031 [P] Conversations service in src-tauri/src/services/conversations_service.rs
+- [X] T032 [P] Messages service in src-tauri/src/services/messages_service.rs
+- [X] T033 [P] Files service in src-tauri/src/services/files_service.rs
 
 ## Phase 3.6: Core Backend Services
-- [ ] T034 [P] Offline storage service in src-tauri/src/services/storage_service.rs
-- [ ] T035 [P] Sync service for online/offline state in src-tauri/src/services/sync_service.rs
-- [ ] T036 [P] Cache management service in src-tauri/src/services/cache_service.rs
-- [ ] T037 [P] Preferences service in src-tauri/src/services/preferences_service.rs
+- [X] T034 [P] Offline storage service in src-tauri/src/services/storage_service.rs
+- [X] T035 [P] Sync service for online/offline state in src-tauri/src/services/sync_service.rs
+- [X] T036 [P] Cache management service in src-tauri/src/services/cache_service.rs
+- [X] T037 [P] Preferences service in src-tauri/src/services/preferences_service.rs
 
 ## Phase 3.7: Tauri Commands (Backend-Frontend Bridge)
 - [ ] T038 Authentication commands (login, logout, refresh) in src-tauri/src/commands/auth.rs
@@ -169,10 +169,10 @@ Cross-platform native desktop wrapper for LibreChat web UI using Tauri v2, prior
 
 ### Phase 3.2 - All Contract Tests Together:
 ```bash
-Task: "Contract test auth API endpoints in tests/contract/test_auth_api.rs"
-Task: "Contract test conversations API endpoints in tests/contract/test_conversations_api.rs"  
-Task: "Contract test messages API endpoints in tests/contract/test_messages_api.rs"
-Task: "Contract test files API endpoints in tests/contract/test_files_api.rs"
+Task: "Contract test auth API endpoints in src-tauri/tests/contract/test_auth_api.rs"
+Task: "Contract test conversations API endpoints in src-tauri/tests/contract/test_conversations_api.rs"  
+Task: "Contract test messages API endpoints in src-tauri/tests/contract/test_messages_api.rs"
+Task: "Contract test files API endpoints in src-tauri/tests/contract/test_files_api.rs"
 ```
 
 ### Phase 3.3 - All Models Together:
