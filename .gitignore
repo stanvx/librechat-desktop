@@ -1,7 +1,10 @@
 # Claude Code
 .claude/
 
-# Specify framework  
+# Codex working directory
+.codex/
+
+# Specify framework
 .specify/
 
 # Temporary directories
